@@ -1,0 +1,18 @@
+---
+mad_goodall:
+  privileged: yes
+
+grave_mayer:
+  privileged: yes
+
+desperate_poincare:
+  privileged: no
+
+small_jepsen:
+  cap_drop_required: no
+
+awesome_bhaskara:
+  cap_drop_required: yes
+
+debug: yes
+...
