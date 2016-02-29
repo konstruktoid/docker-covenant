@@ -34,9 +34,10 @@ for container in events:
                 containerId = containerInspect["Id"]
                 containerName = containerInspect["Name"].replace('/', '')
 
-                containerPrivileged = containerInspect["HostConfig"]["Privileged"]
                 containerCapDrop = containerInspect["HostConfig"]["CapDrop"]
                 containerCapAdd = containerInspect["HostConfig"]["CapAdd"]
+                containerPrivileged = containerInspect["HostConfig"]["Privileged"]
+                containerSecurityOpt = containerInspect["HostConfig"]["SecurityOpt"]
 
                 try:
                     if conf["debug"]:
@@ -44,9 +45,10 @@ for container in events:
                         print "containerEventID: %s" % (containerEventID)
                         print "containerInspect: %s" % (client.inspect_container(containerEventID))
                         print "containerID: %s" % (containerInspect["Id"])
-                        print "containerPrivileged: %s" % (containerPrivileged)
                         print "containerCapDrop: %s" % (containerCapDrop)
-                        print "containerCapAdd: %s" % (containerCapAd)
+                        print "containerCapAdd: %s" % (containerCapAdd)
+                        print "containerSecurityOpt: %s" % (containerSecurityOpt)
+                        print "containerPrivileged: %s" % (containerPrivileged)
                         print "containerStop: %s" % (containerStop)
                 except (NameError):
                     pass
