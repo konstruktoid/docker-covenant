@@ -1,18 +1,11 @@
 ---
-mad_goodall:
-  privileged: yes
+syslog_ident: docker-covenant
+debug: yes
 
-grave_mayer:
-  privileged: yes
-
-desperate_poincare:
+docker-bench-security:
   privileged: no
-
-small_jepsen:
   cap_drop_required: no
 
-awesome_bhaskara:
+privoxy:
   cap_drop_required: yes
-
-debug: yes
 ...
