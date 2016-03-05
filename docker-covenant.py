@@ -5,127 +5,163 @@ import syslog
 import yaml
 from docker import Client
 
-confFile = 'docker-covenant.yml'
-client = Client(base_url='unix://var/run/docker.sock', version='auto')
-events = client.events(decode=True)
-syslog.openlog(ident="docker-covenant")
 
-if os.path.isfile(confFile):
-    with open(confFile, 'r') as f:
-        conf = yaml.safe_load(f)
-else:
-    print "Config file %s doesn't exist." % (confFile)
-    sys.exit(1)
+def dockerClient():
+    global client, events
 
-try:
-    if conf["debug"]:
-        print client.info()
+    client = Client(base_url='unix://var/run/docker.sock', version='auto')
+    events = client.events(decode=True)
 
-except (NameError):
-    pass
 
-for container in events:
+def config():
+    global conf
+
+    confFile = 'docker-covenant.yml'
+
+    if os.path.isfile(confFile):
+        with open(confFile, 'r') as f:
+            conf = yaml.safe_load(f)
+
+            if conf["debug"]:
+                print("configuration file: ", confFile)
+    else:
+        print("Config file ", confFile, " doesn't exist.")
+        sys.exit(1)
+
     try:
-        containerStop = False
-        if "create" in container['status']:
-            try:
-                containerEventID = container['Actor']['ID']
-                containerInspect = client.inspect_container(containerEventID)
-                containerId = containerInspect["Id"]
-                containerName = containerInspect["Name"].replace('/', '')
+        if not conf["syslog_ident"]:
+            logident = "docker-covenant"
+        else:
+            logident = conf["syslog_ident"]
 
-                containerCapDrop = containerInspect["HostConfig"]["CapDrop"]
-                containerCapAdd = containerInspect["HostConfig"]["CapAdd"]
-                containerPrivileged = containerInspect["HostConfig"]["Privileged"]
-                containerSecurityOpt = containerInspect["HostConfig"]["SecurityOpt"]
+        syslog.openlog(ident=logident)
 
+        if conf["debug"]:
+            print("syslog_ident ", logident)
+
+    except (NameError):
+        pass
+
+    try:
+        if conf["debug"]:
+            print("Docker daemon info:\n", client.info())
+
+    except (NameError):
+        pass
+
+
+def main():
+    for container in events:
+        try:
+            containerStop = False
+            if "start" in container['status']:
                 try:
-                    if conf["debug"]:
-                        print container['status']
-                        print "containerEventID: %s" % (containerEventID)
-                        print "containerInspect: %s" % (client.inspect_container(containerEventID))
-                        print "containerID: %s" % (containerInspect["Id"])
-                        print "containerCapDrop: %s" % (containerCapDrop)
-                        print "containerCapAdd: %s" % (containerCapAdd)
-                        print "containerSecurityOpt: %s" % (containerSecurityOpt)
-                        print "containerPrivileged: %s" % (containerPrivileged)
-                        print "containerStop: %s" % (containerStop)
-                except (NameError):
-                    pass
+                    containerEventID = container['Actor']['ID']
+                    containerInspect = client.inspect_container(containerEventID)
+                    containerId = containerInspect["Id"]
+                    containerName = containerInspect["Name"].replace('/', '')
 
-                privNotAllowedLog = "%s: privileged set but not allowed" % (containerName)
-                privNoPolicyLog = "%s: privileged set but no policy" % (containerName)
-                capDropLog = "%s: all capabilities not dropped" % (containerName)
-                capAddAllLog = "%s: capability ALL has been set" % (containerName)
-                stopContainer = "%s: stopping container" % (containerName)
+                    containerCapDrop = containerInspect["HostConfig"]["CapDrop"]
+                    containerCapAdd = containerInspect["HostConfig"]["CapAdd"]
+                    containerPrivileged = containerInspect["HostConfig"]["Privileged"]
+                    containerSecurityOpt = containerInspect["HostConfig"]["SecurityOpt"]
 
-                try:
-                    if containerPrivileged is not False:
-                        if not conf[containerName]['privileged']:
-                            syslog.syslog(privNotAllowedLog)
-                            containerStop = True
-
-                except (KeyError):
-                    syslog.syslog(privNoPolicyLog)
-                    containerStop = True
-
-                try:
-                    if containerCapDrop is not None:
-                        for capDrop in containerCapDrop:
-                            if "all" not in capDrop.lower() and conf[containerName]['cap_drop_required']:
-                                print capDrop.lower()
-                                print conf[containerName]['cap_drop_required']
-                                syslog.syslog(capDropLog)
-                                containerStop = True
-
-                except (KeyError):
-                    syslog.syslog(capDropLog)
-                    containerStop = True
-
-                try:
-                    if containerCapDrop is None:
-                        if conf[containerName]['cap_drop_required']:
-                            syslog.syslog(capDropLog)
-                            containerStop = True
-
-                except (KeyError):
-                    syslog.syslog(capDropLog)
-                    containerStop = True
-
-                if containerCapAdd is not None:
-                    for capAdd in containerCapAdd:
-                        if "all" in capAdd.lower():
-                            syslog.syslog(capAddAllLog)
-                            containerStop = True
-
-                try:
-                    if conf["debug"]:
-                        print "containerStop: %s" % (containerStop)
-                        print "client.stop(%s) sent" % (clientStop)
-
-                except (NameError):
-                    pass
-
-                if containerStop and containerStop is not False:
-                    clientStop = "%s" % (containerId)
+                    privNotAllowedLog = "%s: privileged set but not allowed" % (containerName)
+                    privNoPolicyLog = "%s: privileged set but no policy" % (containerName)
+                    capDropLog = "%s: all capabilities not dropped" % (containerName)
+                    capAddAllLog = "%s: capability ALL has been set" % (containerName)
+                    stopContainerLog = "%s: stopping container" % (containerName)
 
                     try:
                         if conf["debug"]:
-                            print "containerStop: %s" % (containerStop)
-                            print "client.stop(%s) sent" % (clientStop)
+                            print("containerName: ", containerName)
+                            print("containerStatus: ", container['status'])
+                            print("containerEventID: ", containerEventID)
+                            print("containerInspect: ", client.inspect_container(containerEventID))
+                            print("containerID: ", containerInspect["Id"])
+                            print("containerCapDrop: ", containerCapDrop)
+                            print("containerCapAdd: ", containerCapAdd)
+                            print("containerSecurityOpt: ", containerSecurityOpt)
+                            print("containerPrivileged: ", containerPrivileged)
+                            print("containerStop: ", containerStop)
 
                     except (NameError):
                         pass
 
                     try:
-                        client.stop(clientStop)
-                        syslog.syslog(stopContainer)
+                        if containerPrivileged is not False:
+                            if not conf[containerName]['privileged']:
+                                syslog.syslog(privNotAllowedLog)
+                                containerStop = True
 
-                    except Exception, e:
-                        print str(e)
+                    except (KeyError):
+                        syslog.syslog(privNoPolicyLog)
+                        containerStop = True
 
-            except Exception, e:
-                print str(e)
+                    try:
+                        if containerCapDrop is not None:
+                            for capDrop in containerCapDrop:
+                                if "all" not in capDrop.lower() and not conf[containerName]['cap_drop_required']:
+                                    syslog.syslog(capDropLog)
+                                    containerStop = True
 
-    except (KeyError):
-        pass
+                                    if conf["debug"]:
+                                        print("capDrop: ", capDrop.lower())
+                                        print("capDropRequired: ", conf[containerName]['cap_drop_required'])
+
+                    except (KeyError):
+                        syslog.syslog(capDropLog)
+                        containerStop = True
+
+                    try:
+                        if containerCapDrop is None:
+                            if conf[containerName]['cap_drop_required']:
+                                syslog.syslog(capDropLog)
+                                containerStop = True
+
+                    except (KeyError):
+                        syslog.syslog(capDropLog)
+                        containerStop = True
+
+                    if containerCapAdd is not None:
+                        for capAdd in containerCapAdd:
+                            if "all" in capAdd.lower():
+                                syslog.syslog(capAddAllLog)
+                                containerStop = True
+
+                    try:
+                        if conf["debug"]:
+                            print("containerStop: ", containerStop)
+                            print("client.stop(", clientStop, ")")
+
+                    except (NameError):
+                        pass
+
+                    if containerStop and containerStop is not False:
+                        clientStop = "%s" % (containerId)
+
+                        try:
+                            if conf["debug"]:
+                                print("containerStop: ", containerStop)
+                                print("client.stop sent to ", clientStop)
+
+                        except (NameError):
+                            pass
+
+                        try:
+                            client.stop(clientStop)
+                            syslog.syslog(stopContainerLog)
+
+                        except (Exception) as e:
+                            print(e)
+
+                except (Exception) as e:
+                    print(e)
+
+        except (KeyError):
+            pass
+
+if __name__ == "__main__":
+    dockerClient()
+    config()
+    main()
