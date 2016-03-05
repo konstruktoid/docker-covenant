@@ -3,8 +3,6 @@ Enforces a basic container argument policy.
 
 By default all containers have to use `--cap-drop=all` and not permitted to use `--privileged=true`.
 
-It's not pretty, but works when bug hunting.
-
 == Files
 * docker-covenant.py
 * docker-covenant.yml
@@ -14,27 +12,23 @@ It's not pretty, but works when bug hunting.
 [source, yaml]
 ----
 ---
-mad_goodall: // <1>
-  privileged: yes // <2>
+syslog_ident: docker-covenant // <1>
+debug: yes // <2>
 
-desperate_poincare:
-  privileged: no
+docker-bench-security:
+  privileged: no // <3>
+  cap_drop_required: no // <4>
 
-small_jepsen:
-  cap_drop_required: no // <3>
-
-awesome_bhaskara:
+privoxy:
   cap_drop_required: yes
-
-debug: yes // <4>
 ...
 ----
-<1> Container name
-<2> Allow container to use `--privileged=true`
-<3> Don't force `--cap-drop=all`
-<4> Enable debug logging
+<1> Syslog identifier, default `docker-covenant`.
+<2> Enable debug logging, default yes.
+<3> Don't allow container to use `--privileged=true`, default no.
+<4> Don't force `--cap-drop=all`, default yes.
 
 == Logging
-Everything is written to syslog and `debug: yes` writes to console as well.
+All container actions is written to syslog and `debug: yes` writes to console as well.
 
 `sudo journalctl SYSLOG_IDENTIFIER=docker-covenant -f`
