@@ -11,7 +11,7 @@ syslog_ident: docker-covenant // <1>
 debug: yes // <2>
 
 docker-bench-security:
-  privileged: no // <3>
+  privileged: yes // <3>
   cap_drop_required: no // <4>
 
 privoxy:
@@ -20,7 +20,7 @@ privoxy:
 ----
 <1> Syslog identifier, default `docker-covenant`.
 <2> Enable debug logging, default yes.
-<3> Don't allow container to use `--privileged=true`, default no.
+<3> Allow container to use `--privileged=true`, default no.
 <4> Don't force `--cap-drop=all`, default yes.
 
 == Docker example build

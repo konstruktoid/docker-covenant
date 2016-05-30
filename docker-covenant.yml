@@ -7,7 +7,7 @@ docker-covenant:
   cap_drop_required: no
 
 docker-bench-security:
-  privileged: no
+  privileged: yes
   cap_drop_required: no
 
 privoxy:
