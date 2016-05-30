@@ -28,7 +28,42 @@ privoxy:
 <3> Don't allow container to use `--privileged=true`, default no.
 <4> Don't force `--cap-drop=all`, default yes.
 
+== Docker example build
+`docker build -t docker-covenant -f Dockerfile .` +
+`docker run -v /var/run/docker.sock:/var/run/docker.sock:rw docker-covenant`
+
 == Logging
 All container actions is written to syslog and `debug: yes` writes to console as well.
 
-`sudo journalctl SYSLOG_IDENTIFIER=docker-covenant -f`
+`sudo journalctl SYSLOG_IDENTIFIER=docker-covenant`
+
+=== Logging, journald
+[source, shell]
+----
+$ sudo journalctl SYSLOG_IDENTIFIER=docker-covenant
+-- Logs begin at Sun 2016-05-15 19:05:15 CEST, end at Mon 2016-05-30 18:28:28 CEST. --
+May 30 18:27:30 lab01 docker-covenant[1792]: nginx: all capabilities not dropped
+May 30 18:27:30 lab01 docker-covenant[1792]: nginx: stopping container
+----
+
+=== Logging, verbose
+[source, shell]
+----
+$ python docker-covenant.py
+('configuration file: ', 'docker-covenant.yml')
+('syslog_ident ', 'docker-covenant')
+('Docker daemon info:\n', {u'ContainersPaused': 0, u'Labels': None, u'CgroupDriver': u'cgroupfs', u'ContainersRunning': 0, u'NGoroutines': 35, u'LoggingDriver': u'json-file', u'OSType': u'linux', u'HttpProxy': u'', u'DriverStatus': [[u'Backing Filesystem', u'extfs']], u'OperatingSystem': u'Ubuntu 16.04 LTS', u'Containers': 15, u'HttpsProxy': u'', u'BridgeNfIp6tables': True, u'MemTotal': 2097684480, u'Driver': u'overlay', u'IndexServerAddress': u'https://index.docker.io/v1/', u'ClusterStore': u'', u'ExecutionDriver': u'', u'SystemStatus': None, u'OomKillDisable': True, u'ClusterAdvertise': u'', u'SystemTime': u'2016-05-30T18:26:20.809633805+02:00', u'Name': u'lab01', u'CPUSet': True, u'RegistryConfig': {u'InsecureRegistryCIDRs': [u'127.0.0.0/8'], u'IndexConfigs': {u'docker.io': {u'Official': True, u'Name': u'docker.io', u'Secure': True, u'Mirrors': None}}, u'Mirrors': None}, u'SecurityOptions': [u'apparmor', u'seccomp'], u'ContainersStopped': 15, u'NCPU': 1, u'NFd': 16, u'Architecture': u'x86_64', u'KernelMemory': True, u'CpuCfsQuota': True, u'Debug': False, u'ID': u'SM73:KT2V:2BUU:OFUX:FB5S:KOOJ:DPTN:SRDG:QHIC:IDUM:CDLS:XAU4', u'IPv4Forwarding': True, u'KernelVersion': u'4.4.0-22-generic', u'BridgeNfIptables': True, u'NoProxy': u'', u'ServerVersion': u'1.12.0-dev', u'CpuCfsPeriod': True, u'ExperimentalBuild': True, u'MemoryLimit': True, u'SwapLimit': False, u'Plugins': {u'Volume': [u'local'], u'Network': [u'bridge', u'null', u'host'], u'Authorization': None}, u'Images': 45, u'DockerRootDir': u'/var/lib/docker', u'NEventsListener': 2, u'CPUShares': True})
+('containerName: ', u'nginx')
+('containerStatus: ', u'start')
+('containerEventID: ', u'd6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548')
+('containerInspect: ', {u'ExecIDs': None, u'State': {u'Status': u'running', u'Pid': 1870, u'OOMKilled': False, u'Dead': False, u'Paused': False, u'Running': True, u'FinishedAt': u'0001-01-01T00:00:00Z', u'Restarting': False, u'Error': u'', u'StartedAt': u'2016-05-30T16:27:30.712860869Z', u'ExitCode': 0}, u'Config': {u'Tty': False, u'Cmd': [u'nginx', u'-g', u'daemon off;'], u'Volumes': None, u'Domainname': u'', u'WorkingDir': u'', u'Image': u'nginx', u'Hostname': u'd6b29794a8c3', u'StdinOnce': False, u'Labels': {}, u'AttachStdin': False, u'User': u'', u'Env': [u'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', u'NGINX_VERSION=1.11.0-1~jessie'], u'ExposedPorts': {u'443/tcp': {}, u'80/tcp': {}}, u'OnBuild': None, u'AttachStderr': True, u'Entrypoint': None, u'AttachStdout': True, u'OpenStdin': False}, u'ResolvConfPath': u'/var/lib/docker/containers/d6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548/resolv.conf', u'HostsPath': u'/var/lib/docker/containers/d6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548/hosts', u'Args': [u'-g', u'daemon off;'], u'Driver': u'overlay', u'Path': u'nginx', u'HostnamePath': u'/var/lib/docker/containers/d6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548/hostname', u'RestartCount': 0, u'Name': u'/nginx', u'Created': u'2016-05-30T16:27:30.395484359Z', u'GraphDriver': {u'Data': {u'MergedDir': u'/var/lib/docker/overlay/55b932a62b78c48212ede303b3e612017d86d1b67c37d8e175149dfb0dd3ec94/merged', u'WorkDir': u'/var/lib/docker/overlay/55b932a62b78c48212ede303b3e612017d86d1b67c37d8e175149dfb0dd3ec94/work', u'LowerDir': u'/var/lib/docker/overlay/7dd33d99a9c7186f75a9e84d7a815e7424afd475db061ee689416c7d8d7d1e4d/root', u'UpperDir': u'/var/lib/docker/overlay/55b932a62b78c48212ede303b3e612017d86d1b67c37d8e175149dfb0dd3ec94/upper'}, u'Name': u'overlay'}, u'Mounts': [], u'ProcessLabel': u'', u'NetworkSettings': {u'Bridge': u'', u'Networks': {u'bridge': {u'NetworkID': u'f3f3a63a34be29fee94d24af45f905129463e8fd4c3c73dc6c73a3511d4e031e', u'MacAddress': u'02:42:ac:11:00:02', u'GlobalIPv6PrefixLen': 0, u'Links': None, u'GlobalIPv6Address': u'', u'IPv6Gateway': u'', u'IPAMConfig': None, u'EndpointID': u'9701781b3915351862347b5991a4fa175a936ff9af59ada476367165ffe04d22', u'IPPrefixLen': 16, u'IPAddress': u'172.17.0.2', u'Gateway': u'172.17.0.1', u'Aliases': None}}, u'SecondaryIPv6Addresses': None, u'LinkLocalIPv6Address': u'', u'HairpinMode': False, u'IPv6Gateway': u'', u'SecondaryIPAddresses': None, u'SandboxID': u'd3c3f6c64822a3473556ade30d57fc1aa708198424ed6094acf5d8b668e1fb66', u'MacAddress': u'02:42:ac:11:00:02', u'GlobalIPv6Address': u'', u'Gateway': u'172.17.0.1', u'LinkLocalIPv6PrefixLen': 0, u'EndpointID': u'9701781b3915351862347b5991a4fa175a936ff9af59ada476367165ffe04d22', u'SandboxKey': u'/var/run/docker/netns/d3c3f6c64822', u'GlobalIPv6PrefixLen': 0, u'IPPrefixLen': 16, u'IPAddress': u'172.17.0.2', u'Ports': {u'443/tcp': None, u'80/tcp': None}}, u'AppArmorProfile': u'', u'Image': u'sha256:b1fcb97bc5f6effb44ba0b5d60bf927e540dbdcfe091b1b6cd72f0081a12207c', u'LogPath': u'/var/lib/docker/containers/d6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548/d6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548-json.log', u'HostConfig': {u'CpuPeriod': 0, u'MemorySwappiness': -1, u'ContainerIDFile': u'', u'KernelMemory': 0, u'Memory': 0, u'CpuQuota': 0, u'UsernsMode': u'', u'StorageOpt': {}, u'AutoRemove': False, u'BlkioDeviceReadIOps': None, u'Dns': [], u'ExtraHosts': None, u'PidsLimit': 0, u'DnsSearch': [], u'Privileged': False, u'IOMaximumIOps': 0, u'CpuPercent': 0, u'Ulimits': None, u'CpusetCpus': u'', u'DiskQuota': 0, u'CgroupParent': u'', u'BlkioWeight': 0, u'RestartPolicy': {u'MaximumRetryCount': 0, u'Name': u'no'}, u'OomScoreAdj': 0, u'BlkioDeviceReadBps': None, u'VolumeDriver': u'', u'ReadonlyRootfs': False, u'CpuShares': 0, u'NetworkMaximumBandwidth': 0, u'PublishAllPorts': False, u'MemoryReservation': 0, u'BlkioWeightDevice': None, u'ConsoleSize': [0, 0], u'NetworkMode': u'default', u'BlkioDeviceWriteBps': None, u'Isolation': u'', u'GroupAdd': None, u'Devices': [], u'BlkioDeviceWriteIOps': None, u'Binds': None, u'CpusetMems': u'', u'Cgroup': u'', u'UTSMode': u'', u'PidMode': u'', u'VolumesFrom': None, u'CapDrop': None, u'DnsOptions': [], u'ShmSize': 67108864, u'Links': None, u'IpcMode': u'', u'PortBindings': {}, u'SecurityOpt': None, u'CapAdd': None, u'CpuCount': 0, u'MemorySwap': 0, u'OomKillDisable': False, u'LogConfig': {u'Config': {}, u'Type': u'json-file'}, u'IOMaximumBandwidth': 0}, u'Id': u'd6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548', u'MountLabel': u''})
+('containerID: ', u'd6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548')
+('containerCapDrop: ', None)
+('containerCapAdd: ', None)
+('containerSecurityOpt: ', None)
+('containerPrivileged: ', False)
+('containerStop: ', False)
+('containerStop: ', True)
+('containerStop: ', True)
+('client.stop sent to ', u'd6b29794a8c36371625822cebdccb5683ff34791c13e601683158336c2c3f548')
+----
