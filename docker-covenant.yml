@@ -2,6 +2,10 @@
 syslog_ident: docker-covenant
 debug: yes
 
+docker-covenant:
+  privileged: no
+  cap_drop_required: no
+
 docker-bench-security:
   privileged: no
   cap_drop_required: no
