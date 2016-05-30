@@ -3,11 +3,6 @@ Enforces a basic container argument policy.
 
 By default all containers have to use `--cap-drop=all` and not permitted to use `--privileged=true`.
 
-== Files
-* docker-covenant.py
-* docker-covenant.yml
-* README.adoc
-
 == Configuration example
 [source, yaml]
 ----
