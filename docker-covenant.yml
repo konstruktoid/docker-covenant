@@ -4,7 +4,7 @@ debug: yes
 
 docker-covenant:
   privileged: no
-  cap_drop_required: no
+  cap_drop_required: yes
 
 docker-bench-security:
   privileged: yes

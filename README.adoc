@@ -25,7 +25,7 @@ privoxy:
 
 == Docker example build
 `docker build -t docker-covenant -f Dockerfile .` +
-`docker run -v /var/run/docker.sock:/var/run/docker.sock:rw docker-covenant`
+`docker run --name docker-covenant --cap-drop=all -v /var/run/docker.sock:/var/run/docker.sock:rw docker-covenant`
 
 == Logging
 All container actions is written to syslog and `debug: yes` writes to console as well.
