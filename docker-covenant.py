@@ -66,6 +66,7 @@ def main():
                     containerPrivileged = containerInspect["HostConfig"]["Privileged"]
                     containerSecurityOpt = containerInspect["HostConfig"]["SecurityOpt"]
 
+                    noSecurityOpt = "%s: no security options has been set" % (containerName)
                     privNotAllowedLog = "%s: privileged set but not allowed" % (containerName)
                     privNoPolicyLog = "%s: privileged set but no policy" % (containerName)
                     capDropLog = "%s: all capabilities not dropped" % (containerName)
@@ -96,6 +97,19 @@ def main():
 
                     except (KeyError):
                         syslog.syslog(privNoPolicyLog)
+                        containerStop = True
+
+                    try:
+                        if containerSecurityOpt is None:
+                            if conf[containerName]['security_opt_required']:
+                                syslog.syslog(noSecurityOpt)
+                                containerStop = True
+
+                                if conf["debug"]:
+                                    print("containerSecurityOpt: ", containerSecurityOpt)
+
+                    except (KeyError):
+                        syslog.syslog(noSecurityOpt)
                         containerStop = True
 
                     try:
