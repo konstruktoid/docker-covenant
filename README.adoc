@@ -1,7 +1,7 @@
 = docker-covenant
 Enforces a basic container argument policy.
 
-By default all containers have to use `--cap-drop=all` and not permitted to use `--privileged=true`.
+By default all containers have to use `--cap-drop=all`, have a `--security-opt` and not permitted to use `--privileged=true`.
 
 == Configuration example
 [source, yaml]
@@ -10,18 +10,24 @@ By default all containers have to use `--cap-drop=all` and not permitted to use 
 syslog_ident: docker-covenant // <1>
 debug: yes // <2>
 
+docker-covenant:
+  privileged: no
+  cap_drop_required: yes
+
 docker-bench-security:
   privileged: yes // <3>
   cap_drop_required: no // <4>
 
 privoxy:
   cap_drop_required: yes
+  security_opt_required: no // <5>
 ...
 ----
 <1> Syslog identifier, default `docker-covenant`.
 <2> Enable debug logging, default yes.
 <3> Allow container to use `--privileged=true`, default no.
 <4> Don't force `--cap-drop=all`, default yes.
+<5> Require security options, default yes.
 
 == Docker example build
 `docker build -t docker-covenant -f Dockerfile .` +
