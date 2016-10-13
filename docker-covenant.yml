@@ -12,4 +12,5 @@ docker-bench-security:
 
 privoxy:
   cap_drop_required: yes
+  security_opt_required: no
 ...
