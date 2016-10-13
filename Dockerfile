@@ -1,5 +1,8 @@
 FROM konstruktoid/alpine
 
+LABEL org.label-schema.name="docker-covenant"
+      org.label-schema.vcs-url="git@github.com:konstruktoid/docker-covenant.git"
+
 COPY ./* /
 
 RUN apk update && \
