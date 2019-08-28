@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os.path
 import sys
 import syslog
@@ -23,9 +23,9 @@ def config():
             conf = yaml.safe_load(f)
 
             if conf["debug"]:
-                print("configuration file: ", confFile)
+                print(("configuration file: ", confFile))
     else:
-        print("Config file ", confFile, " doesn't exist.")
+        print(("Config file ", confFile, " doesn't exist."))
         sys.exit(1)
 
     try:
@@ -37,14 +37,14 @@ def config():
         syslog.openlog(ident=logident)
 
         if conf["debug"]:
-            print("syslog_ident ", logident)
+            print(("syslog_ident ", logident))
 
     except (NameError):
         pass
 
     try:
         if conf["debug"]:
-            print("Docker daemon info:\n", client.info())
+            print(("Docker daemon info:\n", client.info()))
 
     except (NameError):
         pass
@@ -75,16 +75,16 @@ def main():
 
                     try:
                         if conf["debug"]:
-                            print("containerName: ", containerName)
-                            print("containerStatus: ", container['status'])
-                            print("containerEventID: ", containerEventID)
-                            print("containerInspect: ", client.inspect_container(containerEventID))
-                            print("containerID: ", containerInspect["Id"])
-                            print("containerCapDrop: ", containerCapDrop)
-                            print("containerCapAdd: ", containerCapAdd)
-                            print("containerSecurityOpt: ", containerSecurityOpt)
-                            print("containerPrivileged: ", containerPrivileged)
-                            print("containerStop: ", containerStop)
+                            print(("containerName: ", containerName))
+                            print(("containerStatus: ", container['status']))
+                            print(("containerEventID: ", containerEventID))
+                            print(("containerInspect: ", client.inspect_container(containerEventID)))
+                            print(("containerID: ", containerInspect["Id"]))
+                            print(("containerCapDrop: ", containerCapDrop))
+                            print(("containerCapAdd: ", containerCapAdd))
+                            print(("containerSecurityOpt: ", containerSecurityOpt))
+                            print(("containerPrivileged: ", containerPrivileged))
+                            print(("containerStop: ", containerStop))
 
                     except (NameError):
                         pass
@@ -106,7 +106,7 @@ def main():
                                 containerStop = True
 
                                 if conf["debug"]:
-                                    print("containerSecurityOpt: ", containerSecurityOpt)
+                                    print(("containerSecurityOpt: ", containerSecurityOpt))
 
                     except (KeyError):
                         syslog.syslog(noSecurityOpt)
@@ -120,8 +120,8 @@ def main():
                                     containerStop = True
 
                                     if conf["debug"]:
-                                        print("capDrop: ", capDrop.lower())
-                                        print("capDropRequired: ", conf[containerName]['cap_drop_required'])
+                                        print(("capDrop: ", capDrop.lower()))
+                                        print(("capDropRequired: ", conf[containerName]['cap_drop_required']))
 
                     except (KeyError):
                         syslog.syslog(capDropLog)
@@ -145,8 +145,8 @@ def main():
 
                     try:
                         if conf["debug"]:
-                            print("containerStop: ", containerStop)
-                            print("client.stop(", clientStop, ")")
+                            print(("containerStop: ", containerStop))
+                            print(("client.stop(", clientStop, ")"))
 
                     except (NameError):
                         pass
@@ -156,8 +156,8 @@ def main():
 
                         try:
                             if conf["debug"]:
-                                print("containerStop: ", containerStop)
-                                print("client.stop sent to ", clientStop)
+                                print(("containerStop: ", containerStop))
+                                print(("client.stop sent to ", clientStop))
 
                         except (NameError):
                             pass

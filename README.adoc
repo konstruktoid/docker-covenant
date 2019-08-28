@@ -30,7 +30,7 @@ privoxy:
 <5> Require security options, default yes.
 
 == Docker example build
-`docker build -t docker-covenant -f Dockerfile .` +
+`docker build --no-cache -t docker-covenant -f Dockerfile .` +
 `docker run --name docker-covenant --cap-drop=all -v /var/run/docker.sock:/var/run/docker.sock:rw docker-covenant`
 
 == Logging
