@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
+import docker
 import os.path
 import sys
 import syslog
 import yaml
-from docker import Client
 
 
 def dockerClient():
     global client, events
 
-    client = Client(base_url='unix://var/run/docker.sock', version='auto')
+    client = docker.from_env()
     events = client.events(decode=True)
 
 
