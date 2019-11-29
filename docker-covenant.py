@@ -16,10 +16,10 @@ def dockerClient():
 def config():
     global conf
 
-    confFile = 'docker-covenant.yml'
+    confFile = "docker-covenant.yml"
 
     if os.path.isfile(confFile):
-        with open(confFile, 'r') as f:
+        with open(confFile, "r") as f:
             conf = yaml.safe_load(f)
 
             if conf["debug"]:
@@ -54,12 +54,12 @@ def main():
     for container in events:
         try:
             containerStop = False
-            if "start" in container['status']:
+            if "start" in container["status"]:
                 try:
-                    containerEventID = container['Actor']['ID']
+                    containerEventID = container["Actor"]["ID"]
                     containerInspect = client.inspect_container(containerEventID)
                     containerId = containerInspect["Id"]
-                    containerName = containerInspect["Name"].replace('/', '')
+                    containerName = containerInspect["Name"].replace("/", "")
 
                     containerCapDrop = containerInspect["HostConfig"]["CapDrop"]
                     containerCapAdd = containerInspect["HostConfig"]["CapAdd"]
@@ -76,7 +76,7 @@ def main():
                     try:
                         if conf["debug"]:
                             print(("containerName: ", containerName))
-                            print(("containerStatus: ", container['status']))
+                            print(("containerStatus: ", container["status"]))
                             print(("containerEventID: ", containerEventID))
                             print(("containerInspect: ", client.inspect_container(containerEventID)))
                             print(("containerID: ", containerInspect["Id"]))
@@ -91,7 +91,7 @@ def main():
 
                     try:
                         if containerPrivileged is not False:
-                            if not conf[containerName]['privileged']:
+                            if not conf[containerName]["privileged"]:
                                 syslog.syslog(privNotAllowedLog)
                                 containerStop = True
 
@@ -101,7 +101,7 @@ def main():
 
                     try:
                         if containerSecurityOpt is None:
-                            if conf[containerName]['security_opt_required']:
+                            if conf[containerName]["security_opt_required"]:
                                 syslog.syslog(noSecurityOpt)
                                 containerStop = True
 
@@ -115,13 +115,13 @@ def main():
                     try:
                         if containerCapDrop is not None:
                             for capDrop in containerCapDrop:
-                                if "all" not in capDrop.lower() and not conf[containerName]['cap_drop_required']:
+                                if "all" not in capDrop.lower() and not conf[containerName]["cap_drop_required"]:
                                     syslog.syslog(capDropLog)
                                     containerStop = True
 
                                     if conf["debug"]:
                                         print(("capDrop: ", capDrop.lower()))
-                                        print(("capDropRequired: ", conf[containerName]['cap_drop_required']))
+                                        print(("capDropRequired: ", conf[containerName]["cap_drop_required"]))
 
                     except (KeyError):
                         syslog.syslog(capDropLog)
@@ -129,7 +129,7 @@ def main():
 
                     try:
                         if containerCapDrop is None:
-                            if conf[containerName]['cap_drop_required']:
+                            if conf[containerName]["cap_drop_required"]:
                                 syslog.syslog(capDropLog)
                                 containerStop = True
 
