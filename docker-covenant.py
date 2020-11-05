@@ -20,7 +20,7 @@ def docker_client():
 
 
 def config():
-    """Read the configuration file"""
+    """Read the configuration file."""
     global CONF
 
     configuration_file = "docker-covenant.yml"
